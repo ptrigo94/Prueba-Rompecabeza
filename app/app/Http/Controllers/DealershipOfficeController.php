@@ -43,18 +43,22 @@ class DealershipOfficeController extends Controller
     }
 
     public function allDealershipOffices(){
-        $countries = Countries::all('shortname', 'name');
+        $countries = Countries::all('shortname', 'name','flag_image');
         
         $paises = [];
 
         for ($i=0; $i < $countries->count(); $i++) { 
-            $dealers=  Dealerships::where('country_iso_code',$countries[$i]->shortname)->orderBy('name','asc')->get();
+            $dealers=  Dealerships::where('country_iso_code',$countries[$i]->shortname)->orderBy('name','desc')->get();
+            
             $country = new \stdClass();
             $country->name=$countries[$i]->name;
+            $country->flag=$countries[$i]->flag_image;
             $country->iso_code   =$countries[$i]->shortname;
             $dealerships = [];  
            for ($i=0; $i < $dealers->count(); $i++) { 
                 $dealer = new Dealerships;
+                
+                $dealer->dealership_id= $dealers[$i]->dealership_id;
                 $dealer->name= $dealers[$i]->name;
                 $dealer->adress= $dealers[$i]->adress;
                 $dealer->email= $dealers[$i]->email;                
@@ -71,7 +75,7 @@ class DealershipOfficeController extends Controller
                
         }
         
-        return json_encode($paises);
+        return json_encode($paises, JSON_PRETTY_PRINT);
     }
 
     /**
